@@ -55,6 +55,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     return (int) msg.wParam;
 }
 //만약에 코드를 추가했다.
+int a = 0;
 
 
 //
