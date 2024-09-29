@@ -1,3 +1,5 @@
+Social
+
 https://kostat.go.kr/board.es?mid=a10502020100&bid=3207&act=view&list_no=161820&tag=&nPage=1&ref_bid=3203,3204,3205,3206,3207
 
 "향후 고령인구에 대한 전망은?"
@@ -19,6 +21,9 @@ https://m.khan.co.kr/culture/culture-general/article/202409252028015#c2b
 Social 요약:
 고령비율이 늘어나고 고령비율의 게임 접근성이 높아지면서 고령인구도 즐길 수 있는 접근성이 낮고 쉬운 게임을 만들어야 할 것이다.
 
+
+Technology
+
 https://kr.linkedin.com/pulse/%EA%B8%80%EB%A1%9C%EB%B2%8C-%ED%8A%B8%EB%A0%8C%EB%93%9C%EC%99%80-%EC%A0%84%EB%A7%9D-2025%EB%85%84%EC%9D%84-%EB%8C%80%EB%B9%84%ED%95%98%EB%8A%94-%EC%A0%84%EB%9E%B5-global-trends-outlook-strategies-xsnme
 
 "글로벌 IT 트렌드와 전망: 2025년을 대비하는 전략 | Global IT Trends and Outlook: Strategies for 2025"
@@ -39,3 +44,20 @@ Cambridge open academy, 2024.05.17
 
 Technology 요약:
 AI를 사용하여 여러 가지 일을 할 수 있지만 게임에 적용할 만한 방면에 대해 생각해보면 데이터 분석이나 개인화된 고객 경험을 생각해 볼 수 있을 것이다. 
+
+
+Political
+
+의대 증원 이슈 이어갈 것인가?
+2025년 의대정원 4696명으로 확정
+=>2026년에도 추가 증원 2000명 확정으로 더욱 이슈가 될 예정
+https://www.medifonews.com/news/article.html?no=191153
+https://www.doctorsnews.co.kr/news/articleView.html?idxno=155973
+
+의대 증원으로 인한 의료 문제로 지지율이 많이 낮아짐 
+증원 이어가기에 지지율이 계속 하락할 가능성 존재
+https://m.medigatenews.com/news/3531365551
+
+Political 요약 : 하락한 민심을 더욱 자극시켜줄 게임을 만들면 이슈 가능성 존재
+
+
