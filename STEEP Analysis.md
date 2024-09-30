@@ -45,6 +45,29 @@ Cambridge open academy, 2024.05.17
 Technology 요약:
 AI를 사용하여 여러 가지 일을 할 수 있지만 게임에 적용할 만한 방면에 대해 생각해보면 데이터 분석이나 개인화된 고객 경험을 생각해 볼 수 있을 것이다. 
 
+Environment
+
+1973 ~ 2023 계절별 기온 변화 현황 그래프 및 기온 추이 통계표(e-나라지표)
+https://www.index.go.kr/unity/potal/main/EachDtlPageDetail.do?idx_cd=1400
+
+1908 ~ 2022 대한민국 연평균 기온 변화(한국에너지기술연구원 기술정책플랫폼)
+https://www.kier.re.kr/tpp/tppBoard/view/18?menuId=MENU00962
+
+더 길어진 여름 길이 6 ~ 8월(더 퍼블릭)
+https://www.thepublic.kr/news/articleView.html?idxno=228675
+
+Environment 내용 요약 : 전반적으로 2025년에는 더욱 더울 것이고 여름의 길이도 길어질 것으로 보인다. 이를 통해 알 수 있는 점은 봄과 가을이 짧아지고 평균 온도가 증가하게 되면 우리나라의 겨울 날씨도 점점 따뜻해질것으로 보인다. 길어지고 더욱 더운 여름에는 야외활동을 하기 힘들다. 따라서 e스포츠 대회와 같은 물리적 개최에도 영향을 미칠 수 있다. 폭염, 폭우 같은 극한 날씨 상황은 야외 행사에 장애를 줄 수 있으며, 이는 온라인으로 전환되거나 하이브리드 이벤트 형태로 발전하는 계기가 될 수 있다.
+
+Economic
+
+Unity Pro(Unity WebGL 사용)
+https://unity.com/kr/products/unity-pro?utm_source=google&utm_medium=cpc&utm_campaign=cc_dd_upr_apac_kr_ko_pu_sem-gg_acq_nb-pr_2024-08_unitypro-evergreen_cc3022_pc&utm_term=게임%20스트리밍&gad_source=1&gclid=CjwKCAjw9eO3BhBNEiwAoc0-jUFKdZrS6llNlf8Bh7mTx2Lr4TxBLOW_tD3M12uuLAfGUYFwYOTqghoClbkQAvD_BwE&gclsrc=aw.ds
+
+Geforce NOW(NVIDIA)
+https://gfn.co.kr/ko/welcome.html
+
+Economic 내용 요약 : 올해에 들어서 가장 경제적인 이슈는 클라우드 서비스이다. 클라우드 서비스는 다양한 IT 기업들이 대규모 투자하기 시작한 분야중 하나이다. 우리가 클라우드 서비스를 사용하는 이유는 다양한데 대표적으로 비용 절감 때문이다. 자체 서버를 구축하고 유지하는데에는 상당한 비용이 발생하지만 클라우드를 사용하면 초기 투자 비용을 줄일 수 있다.
+WebGL은 유니티 게임 엔진을 사용해 만든 게임을 웹 브라우저에서 실행할 수 있게 해주는 플랫폼이다. NOW는 엔비디아가 제공하는 클라우드 게임 스트리밍 서비스이다. 즉, WebGL은 클라우드와 웹에서 직접 게임을 배포하는 기술을 제공하고 NOW는 고성능 게임을 클라우드에서 스트리밍하여 다양한 기기에서 즐길 수 있게 한다.
 
 Political
 
