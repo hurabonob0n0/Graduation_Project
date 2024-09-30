@@ -82,5 +82,3 @@ https://www.doctorsnews.co.kr/news/articleView.html?idxno=155973
 https://m.medigatenews.com/news/3531365551
 
 Political 요약 : 하락한 민심을 더욱 자극시켜줄 게임을 만들면 이슈 가능성 존재
-
-
