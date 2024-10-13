@@ -81,7 +81,21 @@ https://www.doctorsnews.co.kr/news/articleView.html?idxno=155973
 증원 이어가기에 지지율이 계속 하락할 가능성 존재
 https://m.medigatenews.com/news/3531365551
 
-Political 요약 : 하락한 민심을 더욱 자극시켜줄 게임을 만들면 이슈 가능성 존재
+우크라이나 러시아 전쟁 현황
+https://m.yonhapnewstv.co.kr/news/MYH20240808008200032
+
+"러, 2025년까지 우크라전 사상자 50만명 전망"
+https://m.yonhapnewstv.co.kr/news/MYH20240101008500032
+
+러시아, 2025년 국방비 30%↑…우크라 전쟁 더 길어지나
+https://www.newsis.com/view/NISX20241001_0002905379
+
+이스라엘-하마스 전쟁 6개월째…통계로 살펴보는 가자 지구의 상황
+https://www.bbc.com/korean/articles/ce483p5jl32o
+
+전쟁은 계속 지속되고 있고 2025년에도 종전이 확실하지 않음.
+
+Political 요약 : 하락한 민심을 더욱 자극시켜줄 게임을 만들거나, 전쟁에 관한 관심도를 이용한 게임을 만들면 이슈화 될 수 있음.
 
 
 -------------------------------------------------------------------------------------
