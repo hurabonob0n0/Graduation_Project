@@ -20,9 +20,15 @@ public:
 	virtual void LateTick(float fTimeDelta);
 	virtual void Render();
 
+
+public:
+	void SetMyplayer() { m_bMyPlayer = true; };
+
 private:
 	CVIBuffer_Geos* m_VIBufferCom;
 
+
+	bool m_bMyPlayer = false;
 public:
 	static CBoxObj* Create();
 	virtual void Free() override;

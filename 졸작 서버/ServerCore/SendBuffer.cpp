@@ -83,6 +83,25 @@ SendBufferRef SendBufferManager::Open(uint32 size)
 
 	return LSendBufferChunk->Open(size);
 }
+//
+//SendBufferRef SendBufferManager::Open(uint32 size)
+//{
+//	if (LSendBufferChunk == nullptr || LSendBufferChunk->IsOpen())
+//	{
+//		LSendBufferChunk = Pop();
+//		LSendBufferChunk->Reset();
+//	}
+//
+//	// 버퍼가 부족할 경우 새로 할당
+//	if (LSendBufferChunk->FreeSize() < size)
+//	{
+//		LSendBufferChunk = Pop();
+//		LSendBufferChunk->Reset();
+//	}
+//
+//	return LSendBufferChunk->Open(size);
+//}
+
 
 SendBufferChunkRef SendBufferManager::Pop()
 {

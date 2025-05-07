@@ -171,11 +171,13 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="SGlobal.cpp" />
     <ClCompile Include="Tank.cpp" />
     <ClCompile Include="Room.cpp" />
     <ClCompile Include="ServerPacketHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AbstractFactory.h" />
     <ClInclude Include="Define.h" />
     <ClInclude Include="ClientSession.h" />
     <ClInclude Include="ClientSessionManager.h" />
@@ -183,6 +185,7 @@
     <ClInclude Include="ObjectManager.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="SGlobal.h" />
     <ClInclude Include="Tank.h" />
     <ClInclude Include="Room.h" />
     <ClInclude Include="ServerPacketHandler.h" />

@@ -25,12 +25,32 @@ public:
 		return it->second;
 	}
 
+public:
+	static	ObjectManager* Get_Instance()
+	{
+		if (!m_pInstance)
+		{
+			m_pInstance = new ObjectManager;
+		}
+		return m_pInstance;
+	}
+
+	static void			Destroy_Instance()
+	{
+		if (m_pInstance)
+		{
+			delete m_pInstance;
+			m_pInstance = nullptr;
+		}
+	}
+
 	int Update();
 	void Late_Update();
 	void Release();
 
 private:
-	
+	static	ObjectManager* m_pInstance;
+
 	std::unordered_map<uint64, GameObject*> _objectMap[OBJ_END];
 
 

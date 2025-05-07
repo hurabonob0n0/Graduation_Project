@@ -20,6 +20,7 @@ public:
 	void Start();
 	void Broadcast(SendBufferRef sendBuffer);
 
+	void ShowPos();
 
 	bool Check_Full();
 	
@@ -33,15 +34,16 @@ private:
 	
 	USE_LOCK;
 	map<uint64, PlayerRef>	_Players;
-	
-	Position PlayersPos[8];
+	uint64					MaxPlayer = 2;
 
-	
-	ObjectManager*			Room_ObjectManager;
-	uint64					MaxPlayer;
+private:
+	float x1;
+	float y1;
+	float z1;
+	float x2;
+	float y2;
+	float z2;
 
-	uint64 testintx = 4;
-	uint64 testintY = 7;
 };
 
 extern Room GRoom;

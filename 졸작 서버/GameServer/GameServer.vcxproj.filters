@@ -60,6 +60,7 @@
     <ClCompile Include="Player.cpp">
       <Filter>Room_Manager\Player</Filter>
     </ClCompile>
+    <ClCompile Include="SGlobal.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -92,5 +93,9 @@
     <ClInclude Include="Player.h">
       <Filter>Room_Manager\Player</Filter>
     </ClInclude>
+    <ClInclude Include="AbstractFactory.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="SGlobal.h" />
   </ItemGroup>
 </Project>

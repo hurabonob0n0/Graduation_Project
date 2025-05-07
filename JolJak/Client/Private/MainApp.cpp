@@ -1,4 +1,6 @@
 #include "pch.h"
+#include "CGlobals.h"
+
 /*-----------------
 	For Client
 -----------------*/
@@ -23,7 +25,6 @@
 #include "ServiceManager.h"
 
 
-static int MYClientID;
 
 
 IMPLEMENT_SINGLETON(CMainApp)
@@ -75,47 +76,44 @@ int CMainApp::Run()
 
 	while (msg.message != WM_QUIT)
 	{
-		// 처리해야할 윈도우 메세지들이 있는지 확인합니다.
 		if (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
-		// 처리해야할 메세지가 없는 경우, 에니메이션과 게임을 처리합니다.
 		else
 		{
 			m_pTimer->Tick();
 
 			if (!m_AppPaused)
 			{
-				
 				CalculateFrameStats();
 				Update(m_pTimer);
-				float time = m_pTimer->TotalTime();
-				float time3[3] = { time,time,time };
-				float time2[3] = { -time,-time,-time };
-				m_pGameInstance->Set_Pos_For_Server("BoxObj", 0, time3);
-				m_pGameInstance->Set_Pos_For_Server("BoxObj", 1, time2);
+				float test[3] = { px.load(),py.load(),pz.load() };
+				if (g_PlayerID == 0) {
+
+					m_pGameInstance->Set_Pos_For_Server("BoxObj", 1, test);
+				}
+				else {
+
+					m_pGameInstance->Set_Pos_For_Server("BoxObj", 0, test);
+				}
 
 				Late_Update(m_pTimer);
 				Draw();
-				
-				
 
-				// 3) 커서가 윈도우 밖으로 나가지 않도록 클리핑
-				//ClipCursor(&rc);
-
-				
-				//m_pInput_Dev->UpdateKeyStates();
 				m_pInput_Dev->ResetPerFrame();
 
-				//POINT center = {
-				//	1280,720
-				//};
-				//ClientToScreen(m_hMainWnd, &center);
+				// 프레임 제한
+				const float targetDelta = 1.0f / 30.0f; // 60 FPS = 16.666ms
+				float frameTime = m_pTimer->DeltaTime();
 
-				//// 2) 마우스 커서 중앙 이동
-				//SetCursorPos(center.x, center.y);
+				if (frameTime < targetDelta)
+				{
+					DWORD sleepTime = DWORD((targetDelta - frameTime) * 1000.0f); // ms 단위로 변환
+					if (sleepTime > 0)
+						Sleep(sleepTime);
+				}
 			}
 			else
 			{
@@ -345,15 +343,26 @@ HRESULT CMainApp::Initialize(HINSTANCE g_hInstance)
 
 #pragma region ServerInitConnect
 
-	//ClientServiceRef service = MakeShared<ClientService>(
-	//	NetAddress(L"127.0.0.1", 7777),
-	//	MakeShared<IocpCore>(),
-	//	MakeShared<ServerSession>,
-	//	1);
+	ClientServiceRef service = MakeShared<ClientService>(
+		NetAddress(L"127.0.0.1", 7777),
+		MakeShared<IocpCore>(),
+		MakeShared<ServerSession>,
+		1);
 
-	//ASSERT_CRASH(service->Start());
+	ASSERT_CRASH(service->Start());
 
-	//ServiceManager::GetInstace().SetService(service);
+	ServiceManager::GetInstace().SetService(service);
+	int32 threadCount = std::thread::hardware_concurrency();
+	for (int32 i = 0; i < threadCount; i++)
+	{
+		GThreadManager->Launch([=]()
+			{
+				while (true)
+				{
+					service->GetIocpCore()->Dispatch();
+				}
+			});
+	}
 
 
 #pragma endregion Dont Touch!
@@ -397,8 +406,7 @@ HRESULT CMainApp::Initialize(HINSTANCE g_hInstance)
 	m_pGameInstance->m_pGraphic_Device->Get_CommandList()->Reset(m_pGameInstance->Get_CommandAlloc(), nullptr);
 
 	m_pGameInstance->AddObject("Camera", CCamera::Create());
-	m_pGameInstance->AddObject("BoxObj", CBoxObj::Create());
-	m_pGameInstance->AddObject("BoxObj", CBoxObj::Create());
+
 	//m_pGameInstance->AddObject("Terrain", CTerrain::Create());
 	//m_pGameInstance->AddObject("Tank", CTank::Create());
 
@@ -408,6 +416,37 @@ HRESULT CMainApp::Initialize(HINSTANCE g_hInstance)
 
 	// 크기 변경을 위한 명령들이 처리될때까지 기다린다.
 	m_pGameInstance->m_pGraphic_Device->FlushCommandQueue();
+
+	while (true) {
+		//서버 연결 시 까지 대기
+		if (g_ServerConnected.load()) {
+
+			uint16 id = g_PlayerID.load();
+			//여기서 서버 연결됨 -> g_playerID에 따라 플레이어 리스트에 접근해서 아이디 값에 맞는 플레이어의 myPlayer(bool값) 을 True로 바꿔줘야함.
+			CBoxObj* pPlayer0 = CBoxObj::Create();
+			CBoxObj* pPlayer1 = CBoxObj::Create();
+			float p0[3] = {10,10,10};
+			
+			
+			pPlayer0->Set_Position(p0);
+
+			if (id == 0) {
+				pPlayer0->SetMyplayer();
+
+			}
+			else {
+				pPlayer1->SetMyplayer();
+
+			}
+
+			m_pGameInstance->AddObject("BoxObj", pPlayer0);
+			m_pGameInstance->AddObject("BoxObj", pPlayer1);
+
+
+			break;
+		}
+			
+	}
 
 
 	return S_OK;
