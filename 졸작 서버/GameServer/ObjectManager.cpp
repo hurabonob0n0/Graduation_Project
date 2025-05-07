@@ -1,6 +1,19 @@
 #include "pch.h"
 #include "ObjectManager.h"
 
+
+ObjectManager* ObjectManager::m_pInstance = nullptr;
+
+
+ObjectManager::ObjectManager()
+{
+}
+
+ObjectManager::~ObjectManager()
+{
+	Release();
+}
+
 void ObjectManager::Add_Object(ObjectID ObjID, int64 playerID, GameObject* gameObject)
 {
 	if (OBJ_END <= ObjID || gameObject == nullptr)

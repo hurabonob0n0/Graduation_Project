@@ -1,4 +1,5 @@
 #include "pch.h"
+#include "SGlobal.h"
 #include "ServerPacketHandler.h"
 #include "BufferReader.h"
 #include "BufferWriter.h"
@@ -24,6 +25,7 @@ void ServerPacketHandler::HandlePacket(PacketSessionRef& session, BYTE* buffer, 
 
 	case C_MOVEMENT:
 		Handle_C_MOVEMENT(session, buffer, len);
+		break;
 
 	default:
 		break;
@@ -94,22 +96,20 @@ void ServerPacketHandler::Handle_C_MOVEMENT(PacketSessionRef& session, BYTE* buf
 
 	ClientSessionRef C_Session = static_pointer_cast<ClientSession>(session);
 
-	SendBufferRef sendBuffer = GSendBufferManager->Open(4096);
 
-	BufferWriter bw(sendBuffer->Buffer(), sendBuffer->AllocSize());
-
-	PacketHeader* header = bw.Reserve<PacketHeader>();
+	BufferReader br(buffer, len);
+	PacketHeader header;
+	br >> header;
 	
 	float x1;
 	float y1;
 	float z1;
-	bw << x1 << y1 << z1;
+	br >> x1 >> y1 >> z1;
 
 	if (!C_Session->_players.empty()) {
-	
 		uint64 ID = C_Session->_players[0]->playerID;
 		GRoom.MovePlayer(ID,x1,y1,z1);
-
+		GRoom.ShowPos();
 	}
 
 }
@@ -134,6 +134,20 @@ SendBufferRef ServerPacketHandler::Make_S_TEST(uint64 id, uint32 hp, uint16 atta
 	return sendBuffer;
 }
 
+SendBufferRef ServerPacketHandler::Make_S_GAMESTART(BYTE dummy)
+{
+	SendBufferRef sendBuffer = GSendBufferManager->Open(4096);
+
+	BufferWriter bw(sendBuffer->Buffer(), sendBuffer->AllocSize());
+
+	PacketHeader* header = bw.Reserve<PacketHeader>();
+
+	header->size = bw.WriteSize();
+	header->id = S_GAME_START;
+
+	return sendBuffer;
+}
+
 SendBufferRef ServerPacketHandler::Make_S_SUCCES_LOGIN(uint16 id)
 {
 
@@ -151,14 +165,15 @@ SendBufferRef ServerPacketHandler::Make_S_SUCCES_LOGIN(uint16 id)
 	return sendBuffer;
 }
 
-SendBufferRef ServerPacketHandler::Make_S_PLAYER_MOVED(float x1, float y1, float z1, float x2,float y2, float z2)
+SendBufferRef ServerPacketHandler::Make_S_PLAYER_MOVED(float x1, float y1, float z1)
 {
 	SendBufferRef sendBuffer = GSendBufferManager->Open(4096);
 
 	BufferWriter bw(sendBuffer->Buffer(), sendBuffer->AllocSize());
 
 	PacketHeader* header = bw.Reserve<PacketHeader>();
-	bw << x1 << y1 << z1 << x2 << y2 << z2;
+
+	bw << x1 << y1 << z1;
 
 	header->size = bw.WriteSize();
 	header->id = S_PLAYER_MOVE;

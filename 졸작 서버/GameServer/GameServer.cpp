@@ -1,4 +1,5 @@
 ﻿#include "pch.h"
+#include "SGlobal.h"
 #include "ThreadManager.h"
 #include "Service.h"
 #include "Session.h"
@@ -23,8 +24,8 @@ int main()
 	ASSERT_CRASH(service->Start());
 	int32 threadCount = std::thread::hardware_concurrency();
 
-	GRoom.Initialize();
 
+	
 	for (int32 i = 0; i < threadCount; i++)
 	{
 		GThreadManager->Launch([=]()
@@ -38,13 +39,15 @@ int main()
 
 	constexpr int64_t FRAME_DURATION_MS = 33;
 
+	GRoom.Initialize();
+
+
 	while (true)
 	{
 		auto frameStart = high_resolution_clock::now();
 
 		GRoom.Update();
 		GRoom.LateUpdate();
-		//GRoom.Broadcast();
 
 		auto frameEnd = high_resolution_clock::now();
 		auto elapsed = duration_cast<milliseconds>(frameEnd - frameStart).count();

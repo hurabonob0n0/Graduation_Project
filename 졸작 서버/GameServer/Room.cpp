@@ -3,6 +3,10 @@
 #include "Player.h"
 #include "ClientSession.h"
 #include "ServerPacketHandler.h"
+#include "AbstractFactory.h"
+#include "Tank.h"
+#include "ObjectManager.h"
+#include "SGlobal.h"
 
 Room GRoom;
 
@@ -22,35 +26,40 @@ Room::~Room()
 
 void Room::Initialize()
 {
-	//TODO : 
-	
-	//Room_ObjectManager->Add_Object()
-}
 
-void Room::Update()
-{
-	//READ_LOCK;
-	//empty().Player->queue.pop
-	//
-	// 
-	// 
-	//객체들 상호작용, 객체들 상태 업데이트
-	//충돌처리
+	ObjectManager::Get_Instance()->Add_Object(OBJ_TANK, 0, CAbstractFactory<Tank>::Create(0,0,0));
+	ObjectManager::Get_Instance()->Add_Object(OBJ_TANK, 1, CAbstractFactory<Tank>::Create(0, 0, 0));
 
-
-
-	READ_LOCK
-	PlayersPos[0] = Room_ObjectManager->GetGameObject(OBJ_TANK, 0)->GetPos();
-	PlayersPos[1] = Room_ObjectManager->GetGameObject(OBJ_TANK, 1)->GetPos();
-
-	SendBufferRef sendBuffer = ServerPacketHandler::Make_S_PLAYER_MOVED
-	(PlayersPos[0].PosX, PlayersPos[0].PosY, PlayersPos[0].PosZ, PlayersPos[1].PosX, PlayersPos[1].PosY, PlayersPos[1].PosZ);
+	SendBufferRef sendBuffer = ServerPacketHandler::Make_S_GAMESTART(1);
 	Broadcast(sendBuffer);
 
 }
 
+void Room::Update()
+{
+
+	//READ_LOCK
+	//Position Pos0 = ObjectManager::Get_Instance()->GetGameObject(OBJ_TANK, 0)->GetPos();
+	//Position Pos1 = ObjectManager::Get_Instance()->GetGameObject(OBJ_TANK, 1)->GetPos();
+
+
+	//x1 = Pos0.PosX;
+	//y1 = Pos0.PosY;
+	//z1 = Pos0.PosZ;
+	//x2 = Pos1.PosX;
+	//y2 = Pos1.PosY;
+	//z2 = Pos1.PosZ;
+}
+
 void Room::LateUpdate()
 {
+
+	//READ_LOCK;
+	//Position OBJ0 = ObjectManager::Get_Instance()->GetGameObject(OBJ_TANK, 0)->GetPos();
+	//Position OBJ1 = ObjectManager::Get_Instance()->GetGameObject(OBJ_TANK, 1)->GetPos();
+	//SendBufferRef sendBuffer = ServerPacketHandler::Make_S_PLAYER_MOVED(OBJ0.PosX, OBJ0.PosY, OBJ0.PosZ, OBJ1.PosX, OBJ1.PosY, OBJ1.PosZ);
+	//Broadcast(sendBuffer);
+
 }
 
 void Room::Release()
@@ -88,9 +97,29 @@ void Room::Broadcast(SendBufferRef sendBuffer)
 	}
 }
 
+void Room::ShowPos()
+{
+	READ_LOCK;
+	Position OBJ0 = ObjectManager::Get_Instance()->GetGameObject(OBJ_TANK, 0)->GetPos();
+	Position OBJ1 = ObjectManager::Get_Instance()->GetGameObject(OBJ_TANK, 1)->GetPos();
+
+	cout << "OBJ0" << "   " << OBJ0.PosX << "     " << OBJ0.PosY << "    " << OBJ0.PosZ << endl;
+	cout << "OBJ1" << "   " << OBJ1.PosX << "     " << OBJ1.PosY << "    " << OBJ1.PosZ << endl;
+
+
+
+	SendBufferRef sendBuffer1 = ServerPacketHandler::Make_S_PLAYER_MOVED(OBJ1.PosX,OBJ1.PosY,OBJ1.PosZ);
+	_Players[0]->OwenerSession->Send(sendBuffer1);
+
+	SendBufferRef sendBuffer2 = ServerPacketHandler::Make_S_PLAYER_MOVED(OBJ0.PosX, OBJ0.PosY, OBJ0.PosZ);
+	_Players[1]->OwenerSession->Send(sendBuffer2);
+}
+
 bool Room::Check_Full()
 {
+	READ_LOCK;
 	if (_Players.size() >= MaxPlayer) {
+		g_Roomfull.store(true);
 		return true;
 	}
 
@@ -100,6 +129,6 @@ bool Room::Check_Full()
 void Room::MovePlayer(int64 playerID,float x, float y, float z)
 {
 	WRITE_LOCK;
-	Room_ObjectManager->GetGameObject(OBJ_TANK, playerID)->SetPos(x,y,z);
+	ObjectManager::Get_Instance()->GetGameObject(OBJ_TANK, playerID)->SetPos(x,y,z);
 
 }	
