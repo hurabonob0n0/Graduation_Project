@@ -4,7 +4,6 @@
 
 ObjectManager* ObjectManager::m_pInstance = nullptr;
 
-
 ObjectManager::ObjectManager()
 {
 }
@@ -14,52 +13,51 @@ ObjectManager::~ObjectManager()
 	Release();
 }
 
-void ObjectManager::Add_Object(ObjectID ObjID, int64 playerID, GameObject* gameObject)
-{
-	if (OBJ_END <= ObjID || gameObject == nullptr)
-		return;
 
-	_objectMap[ObjID][playerID] = gameObject;
-}
-
-int ObjectManager::Update()
+int ObjectManager::Update(void)
 {
 	for (size_t i = 0; i < OBJ_END; ++i)
 	{
-		for (auto iter = _objectMap[i].begin(); iter != _objectMap[i].end(); ++iter)
+		auto& vec = m_ObjectList[i];
+		for (size_t j = 0; j < vec.size(); )
 		{
-			GameObject* obj = iter->second;
-			if (obj)
-				obj->Update();
+			int iResult = vec[j]->Update();
+
+			if (1 == iResult)
+			{
+				Safe_Delete(vec[j]);
+				vec.erase(vec.begin() + j);
+			}
+			else
+			{
+				++j;
+			}
 		}
 	}
 
-	return true;
+	return 0;
 }
 
-void ObjectManager::Late_Update()
+void ObjectManager::Late_Update(void)
 {
 	for (size_t i = 0; i < OBJ_END; ++i)
 	{
-		for (auto iter = _objectMap[i].begin(); iter != _objectMap[i].end(); ++iter)
+		auto& vec = m_ObjectList[i];
+		for (auto& obj : vec)
 		{
-			GameObject* obj = iter->second;
 			if (obj)
 				obj->Late_Update();
 		}
 	}
 }
 
-void ObjectManager::Release()
+void ObjectManager::Release(void)
 {
 	for (size_t i = 0; i < OBJ_END; ++i)
 	{
-		for (auto iter = _objectMap[i].begin(); iter != _objectMap[i].end(); ++iter)
-		{
-			GameObject* obj = iter->second;
-			if (obj)
-				Safe_Delete(obj);
-		}
-		_objectMap[i].clear();
+		auto& vec = m_ObjectList[i];
+		for (auto& obj : vec)
+			Safe_Delete(obj);
+		vec.clear();
 	}
 }

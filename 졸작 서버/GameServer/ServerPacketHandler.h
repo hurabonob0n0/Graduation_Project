@@ -4,12 +4,14 @@ enum
 {
 	S_TEST = 1,//for Dummy
 	S_SUCCES_LOGIN = 2,
-	S_GAME_START =3,
+	S_ROOMCREATED =3,
 	S_PLAYER_MOVE = 4,
 	C_LOGIN = 1001,
 	C_KEYINPUT = 1002, 
 	C_MOVEMENT = 1003
 };
+
+struct Vec3_Data;
 
 struct BuffData
 {
@@ -30,9 +32,9 @@ public:
 
 	//For Send
 	static SendBufferRef Make_S_TEST(uint64 id, uint32 hp, uint16 attack);
-	static SendBufferRef Make_S_GAMESTART(BYTE dummy);
+	static SendBufferRef Make_S_ROOMCREATED(uint16 id);
 	static SendBufferRef Make_S_SUCCES_LOGIN(uint16 id);
-	static SendBufferRef Make_S_PLAYER_MOVED(float x1, float y1, float z1);
+	static SendBufferRef Make_S_PLAYER_MOVED(Vec3_Data Position);
 
 	USE_LOCK;
 };
