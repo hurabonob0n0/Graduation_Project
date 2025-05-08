@@ -39,8 +39,13 @@ int main()
 
 	constexpr int64_t FRAME_DURATION_MS = 33;
 
-	GRoom.Initialize();
 
+	while (!GRoom.Check_Full(2)) {
+
+		
+	}
+
+	GRoom.Initialize();
 
 	while (true)
 	{

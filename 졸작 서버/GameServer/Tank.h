@@ -12,7 +12,9 @@ public:
 		virtual int  Update()		override;
 		virtual void Late_Update()	override;
 		virtual void Release()		override;
-public:								  
+public:					
+
+
 	uint64 playerId = 0;	
 
 

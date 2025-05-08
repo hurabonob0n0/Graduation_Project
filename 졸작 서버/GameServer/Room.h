@@ -1,6 +1,9 @@
 #pragma once
 #include "ObjectManager.h"
 
+
+struct Vec3_Data;
+
 class Room 
 {
 public:
@@ -22,19 +25,20 @@ public:
 
 	void ShowPos();
 
-	bool Check_Full();
+	bool Check_Full(uint16 MaxPlayer);
 	
 
 public:
 
 	void MovePlayer(int64 playerID, float x, float y, float z);
+	void SetPlayerPos(int64 pID, float x, float y, float z);
+	Vec3_Data GetPlayerPos(int64 pID);
 
 
 private:
 	
 	USE_LOCK;
 	map<uint64, PlayerRef>	_Players;
-	uint64					MaxPlayer = 2;
 
 private:
 	float x1;

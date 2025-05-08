@@ -50,8 +50,8 @@ void ServerPacketHandler::Handle_C_LOGIN(PacketSessionRef& session,BYTE* buffer,
 
 	auto sendbuffer = Make_S_SUCCES_LOGIN((uint16)newClientID);
 	session->Send(sendbuffer);
-	
-	
+		
+
 	//로그인
 
 
@@ -108,8 +108,24 @@ void ServerPacketHandler::Handle_C_MOVEMENT(PacketSessionRef& session, BYTE* buf
 
 	if (!C_Session->_players.empty()) {
 		uint64 ID = C_Session->_players[0]->playerID;
-		GRoom.MovePlayer(ID,x1,y1,z1);
+		GRoom.SetPlayerPos(ID,x1,y1,z1);
 		GRoom.ShowPos();
+	}
+
+	if (!C_Session->_players.empty()) {
+		uint64 ID = C_Session->_players[0]->playerID;
+		Vec3_Data Temp;
+		if (ID == 0) {
+			Temp = GRoom.GetPlayerPos(1);
+
+		}
+		else {
+			Temp = GRoom.GetPlayerPos(0);
+
+		}
+
+		auto sendbuffer = Make_S_PLAYER_MOVED(Temp);
+		session->Send(sendbuffer);
 	}
 
 }
@@ -134,7 +150,7 @@ SendBufferRef ServerPacketHandler::Make_S_TEST(uint64 id, uint32 hp, uint16 atta
 	return sendBuffer;
 }
 
-SendBufferRef ServerPacketHandler::Make_S_GAMESTART(BYTE dummy)
+SendBufferRef ServerPacketHandler::Make_S_ROOMCREATED(uint16 id)
 {
 	SendBufferRef sendBuffer = GSendBufferManager->Open(4096);
 
@@ -142,8 +158,12 @@ SendBufferRef ServerPacketHandler::Make_S_GAMESTART(BYTE dummy)
 
 	PacketHeader* header = bw.Reserve<PacketHeader>();
 
+	bw << id;
+
 	header->size = bw.WriteSize();
-	header->id = S_GAME_START;
+	header->id = S_ROOMCREATED;
+
+	cout << "Room Created! -> send for Brodcast" << endl;
 
 	return sendBuffer;
 }
@@ -156,29 +176,35 @@ SendBufferRef ServerPacketHandler::Make_S_SUCCES_LOGIN(uint16 id)
 	BufferWriter bw(sendBuffer->Buffer(), sendBuffer->AllocSize());
 
 	PacketHeader* header = bw.Reserve<PacketHeader>();
-	header->size = bw.WriteSize();
+
+	bw << id;						// 먼저 데이터를 쓴다
+	header->size = bw.WriteSize();	// 그다음 정확한 전체 크기를 설정한다
 	header->id = S_SUCCES_LOGIN;
-	bw << id;
+
+
 
 	sendBuffer->Close(bw.WriteSize());
 
 	return sendBuffer;
 }
 
-SendBufferRef ServerPacketHandler::Make_S_PLAYER_MOVED(float x1, float y1, float z1)
+SendBufferRef ServerPacketHandler::Make_S_PLAYER_MOVED(Vec3_Data Position)
 {
 	SendBufferRef sendBuffer = GSendBufferManager->Open(4096);
-
 	BufferWriter bw(sendBuffer->Buffer(), sendBuffer->AllocSize());
 
 	PacketHeader* header = bw.Reserve<PacketHeader>();
 
-	bw << x1 << y1 << z1;
+	// float 그대로 전송
+
+	
+	Vec3_Data& pos = Position;
+	bw << pos.X << pos.Y << pos.Z;
+	
 
 	header->size = bw.WriteSize();
 	header->id = S_PLAYER_MOVE;
 
 	sendBuffer->Close(bw.WriteSize());
-
 	return sendBuffer;
 }

@@ -58,11 +58,11 @@ HRESULT CRenderer::Initialize(void* pArg)
 
 void CRenderer::Render()
 {
-    void Render_Priority();
-	void Render_NonLight();
-	void Render_NonBlend();
-	void Render_Blend();
-	void Render_UI();
+    Render_Priority();
+	Render_NonLight();
+	Render_NonBlend();
+	Render_Blend();
+	Render_UI();
 }
 
 void CRenderer::Render_Priority()
