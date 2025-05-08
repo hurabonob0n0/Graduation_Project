@@ -1,16 +1,8 @@
 #include "pch.h"
-#include "CGlobals.h"
 #include "ClientPacketHandler.h"
 #include "BufferReader.h"
 #include "BufferWriter.h"
 #include "ServiceManager.h"
-#include "GameInstance.h"
-
-
-
-ClientPacketHandler::ClientPacketHandler()
-{
-}
 
 void ClientPacketHandler::HandlePacket(BYTE* buffer, int32 len)
 {
@@ -30,10 +22,6 @@ void ClientPacketHandler::HandlePacket(BYTE* buffer, int32 len)
 	case S_PLAYER_MOVE:
 		Handle_S_PLAYER_MOVE(buffer, len);
 		break;
-	case S_GAME_START:
-		Handle_S_GAMESTART(buffer, len);
-		break;
-
 	}
 }
 
@@ -79,8 +67,6 @@ void ClientPacketHandler::Handle_S_SUCCES_LOGIN(BYTE* buffer, int32 len)
 
 	br >> ID;
 	ServiceManager::GetInstace().SetMyID(ID);
-	g_ServerConnected.store(true);
-	g_PlayerID.store(ID);
 
 #pragma endregion
 }
@@ -92,29 +78,15 @@ void ClientPacketHandler::Handle_S_PLAYER_MOVE(BYTE* buffer, int32 len)
 	PacketHeader header;
 	br >> header;
 
-	S_Pos PlayersPos;
-	br >> PlayersPos.PosX >> PlayersPos.PosY >> PlayersPos.PosZ;
-
-
-	px.store(PlayersPos.PosX);
-	py.store(PlayersPos.PosY);
-	pz.store(PlayersPos.PosZ);
-	
-
+	S_Pos PlayersPos[2];
+	br >> PlayersPos[0].PosX >> PlayersPos[0].PosY >> PlayersPos[0].PosZ 
+		>> PlayersPos[1].PosX >> PlayersPos[1].PosY >> PlayersPos[1].PosZ;
 
 #pragma region 객체들 좌표값 넣어주기
-	//uint16 id = ServiceManager::GetInstace().GetMyID();
-
-
+	uint16 id = ServiceManager::GetInstace().GetMyID();
+	//ex) objectlist.Get_object(objbox,id).set_pos(PlayersPos[id]);
 
 #pragma endregion TODO : LOCK걸고 PlayerID에 맞는 값 넣어주기
-}
-
-void ClientPacketHandler::Handle_S_GAMESTART(BYTE* buffer, int32 len)
-{
-	
-	int a = 0;
-
 }
 
 SendBufferRef ClientPacketHandler::Make_C_LOGIN(uint64 id, uint32 hp, uint16 attack)

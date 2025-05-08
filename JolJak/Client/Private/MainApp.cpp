@@ -1,6 +1,4 @@
 #include "pch.h"
-#include "CGlobals.h"
-
 /*-----------------
 	For Client
 -----------------*/
@@ -25,17 +23,28 @@
 #include "ServiceManager.h"
 
 
+static int MYClientID;
 
 
 IMPLEMENT_SINGLETON(CMainApp)
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
 	PSTR cmdLine, int showCmd){
-	// Enable run-time memory check for debug builds.
-#if defined(DEBUG) | defined(_DEBUG)
-	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-#endif
+	
+	//_CrtSetBreakAlloc(624);
+	//_CrtSetBreakAlloc(622);
+	//_CrtSetBreakAlloc(623);
+	//_CrtSetBreakAlloc(720);
+	//_CrtSetBreakAlloc(704);
+	//_CrtSetBreakAlloc(706);
+	//_CrtSetBreakAlloc(623);
+	//_CrtSetBreakAlloc(624);
+	//_CrtSetBreakAlloc(622);
+	//_CrtSetBreakAlloc(623);
+	//_CrtSetBreakAlloc(159);
+	//_CrtSetBreakAlloc(159);
 	//_CrtSetBreakAlloc(158);
+	//_CrtSetBreakAlloc(159);
 	//_CrtSetBreakAlloc(159);
 	try
 	{
@@ -62,7 +71,7 @@ MainWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	return CMainApp::Get_Instance()->MsgProc(hwnd, msg, wParam, lParam);
 }
 
-CMainApp::CMainApp() : m_pGameInstance(CGameInstance::Get_Instance()), m_pTimer(CTimer::Get_Instance()), m_pInput_Dev(CRawInput_Device::Get_Instance()) //m_pInput_Dev(CInput_Device::Get_Instance())
+CMainApp::CMainApp() : m_GameInstance(CGameInstance::Get_Instance()), m_pTimer(CTimer::Get_Instance()), m_pInput_Dev(CRawInput_Device::Get_Instance()) //m_pInput_Dev(CInput_Device::Get_Instance())
 {
 	//ShowCursor(FALSE);                   // 커서 숨기기
 	ClipCursor(nullptr);                 // 클리핑 해제 (다른 데선 NULL 해제용)
@@ -76,44 +85,41 @@ int CMainApp::Run()
 
 	while (msg.message != WM_QUIT)
 	{
+		// 처리해야할 윈도우 메세지들이 있는지 확인합니다.
 		if (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
+		// 처리해야할 메세지가 없는 경우, 에니메이션과 게임을 처리합니다.
 		else
 		{
 			m_pTimer->Tick();
 
 			if (!m_AppPaused)
 			{
+				
 				CalculateFrameStats();
 				Update(m_pTimer);
-				float test[3] = { px.load(),py.load(),pz.load() };
-				if (g_PlayerID == 0) {
-
-					m_pGameInstance->Set_Pos_For_Server("BoxObj", 1, test);
-				}
-				else {
-
-					m_pGameInstance->Set_Pos_For_Server("BoxObj", 0, test);
-				}
-
 				Late_Update(m_pTimer);
 				Draw();
+				
+				
 
+				// 3) 커서가 윈도우 밖으로 나가지 않도록 클리핑
+				//ClipCursor(&rc);
+
+				
+				//m_pInput_Dev->UpdateKeyStates();
 				m_pInput_Dev->ResetPerFrame();
 
-				// 프레임 제한
-				const float targetDelta = 1.0f / 30.0f; // 60 FPS = 16.666ms
-				float frameTime = m_pTimer->DeltaTime();
+				POINT center = {
+					1280,720
+				};
+				ClientToScreen(m_hMainWnd, &center);
 
-				if (frameTime < targetDelta)
-				{
-					DWORD sleepTime = DWORD((targetDelta - frameTime) * 1000.0f); // ms 단위로 변환
-					if (sleepTime > 0)
-						Sleep(sleepTime);
-				}
+				// 2) 마우스 커서 중앙 이동
+				SetCursorPos(center.x, center.y);
 			}
 			else
 			{
@@ -121,9 +127,13 @@ int CMainApp::Run()
 			}
 		}
 	}
-	//Safe_Release(m_pGameInstance);
-	
+
 	RELEASE_INSTANCE(CMainApp);
+
+	// Enable run-time memory check for debug builds.
+#if defined(DEBUG) | defined(_DEBUG)
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#endif
 
 	return (int)msg.wParam;
 }
@@ -154,7 +164,7 @@ LRESULT CMainApp::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		m_ClientWidth = LOWORD(lParam);
 		m_ClientHeight = HIWORD(lParam);
 
-		if (m_pGameInstance)
+		if (m_GameInstance)
 		{
 			if (wParam == SIZE_MINIMIZED)
 			{
@@ -343,26 +353,15 @@ HRESULT CMainApp::Initialize(HINSTANCE g_hInstance)
 
 #pragma region ServerInitConnect
 
-	ClientServiceRef service = MakeShared<ClientService>(
-		NetAddress(L"127.0.0.1", 7777),
-		MakeShared<IocpCore>(),
-		MakeShared<ServerSession>,
-		1);
+	//ClientServiceRef service = MakeShared<ClientService>(
+	//	NetAddress(L"127.0.0.1", 7777),
+	//	MakeShared<IocpCore>(),
+	//	MakeShared<ServerSession>,
+	//	1);
 
-	ASSERT_CRASH(service->Start());
+	//ASSERT_CRASH(service->Start());
 
-	ServiceManager::GetInstace().SetService(service);
-	int32 threadCount = std::thread::hardware_concurrency();
-	for (int32 i = 0; i < threadCount; i++)
-	{
-		GThreadManager->Launch([=]()
-			{
-				while (true)
-				{
-					service->GetIocpCore()->Dispatch();
-				}
-			});
-	}
+	//ServiceManager::GetInstace().SetService(service);
 
 
 #pragma endregion Dont Touch!
@@ -377,76 +376,36 @@ HRESULT CMainApp::Initialize(HINSTANCE g_hInstance)
 	//m_pInput_Dev->Initialize(g_hInstance,m_hMainWnd);
 	m_pInput_Dev->Initialize(m_hMainWnd);
 
-	if (FAILED(m_pGameInstance->Initialize_Engine(m_hMainWnd,m_pInput_Dev)))
+	if (FAILED(m_GameInstance->Initialize_Engine(m_hMainWnd,m_pInput_Dev)))
 		return E_FAIL;
 
-	m_pGameInstance->OnResize();
+	m_GameInstance->OnResize();
 #pragma endregion
 
-	m_pGameInstance->m_pGraphic_Device->FlushCommandQueue();
+	m_GameInstance->m_pGraphic_Device->FlushCommandQueue();
 
-	m_pGameInstance->m_pGraphic_Device->Get_CommandList()->Reset(m_pGameInstance->Get_CommandAlloc() , nullptr);
+	m_GameInstance->m_pGraphic_Device->Get_CommandList()->Reset(m_GameInstance->Get_CommandAlloc() , nullptr);
 
-	m_pGameInstance->AddPrototype("TransformCom", CTransform::Create());
+	m_GameInstance->AddPrototype("TransformCom", CTransform::Create());
 	//m_pGameInstance->AddPrototype("TerrainCom", CVIBuffer_Terrain::Create(m_pGameInstance->Get_Device(),m_pGameInstance->Get_CommandList(),"../Bin/Models/Terrain/Terrain.png",0.3f,1.f));
-	m_pGameInstance->AddPrototype("BaseGeosCom", CVIBuffer_Geos::Create(m_pGameInstance->Get_Device(), m_pGameInstance->Get_CommandList()));
-	//m_pGameInstance->AddPrototype("TankModel", CModel::Create(m_pGameInstance->Get_Device(), m_pGameInstance->Get_CommandList(), CModel::TYPE_NONANIM, "../bin/Models/Tank/M1A2.FBX"));
+	m_GameInstance->AddPrototype("BaseGeosCom", CVIBuffer_Geos::Create(m_GameInstance->Get_Device(), m_GameInstance->Get_CommandList()));
+	//m_GameInstance->AddPrototype("TankModel", CModel::Create(m_GameInstance->Get_Device(), m_GameInstance->Get_CommandList(), CModel::TYPE_NONANIM, "../bin/Models/Tank/M1A2.FBX"));
 
 	//CModel* pModel = CModel::Create(m_pGameInstance->Get_Device(), m_pGameInstance->Get_CommandList(), CModel::TYPE_NONANIM, "../bin/Models/Tank/M1A2.FBX");
-	
-	m_pGameInstance->Get_CommandList()->Close();
-	ID3D12CommandList* cmdLists[] = { m_pGameInstance->Get_CommandList() };
-	m_pGameInstance->Get_CommandQueue()->ExecuteCommandLists(_countof(cmdLists), cmdLists);
 
-//	int a = 0;
-
-	// 크기 변경을 위한 명령들이 처리될때까지 기다린다.
-	m_pGameInstance->m_pGraphic_Device->FlushCommandQueue();
-
-	m_pGameInstance->m_pGraphic_Device->Get_CommandList()->Reset(m_pGameInstance->Get_CommandAlloc(), nullptr);
-
-	m_pGameInstance->AddObject("Camera", CCamera::Create());
+	//m_GameInstance->AddObject("Camera", CCamera::Create());
+	//m_GameInstance->AddObject("BoxObj", CBoxObj::Create());
+	//m_GameInstance->AddObject("BoxObj", CBoxObj::Create());
 
 	//m_pGameInstance->AddObject("Terrain", CTerrain::Create());
 	//m_pGameInstance->AddObject("Tank", CTank::Create());
 
-	m_pGameInstance->Get_CommandList()->Close();
-	ID3D12CommandList* cmdLists2[] = { m_pGameInstance->Get_CommandList()};
-	m_pGameInstance->Get_CommandQueue()->ExecuteCommandLists(_countof(cmdLists2), cmdLists2);
+	m_GameInstance->Get_CommandList()->Close();
+	ID3D12CommandList* cmdLists[] = { m_GameInstance->Get_CommandList() };
+	m_GameInstance->Get_CommandQueue()->ExecuteCommandLists(_countof(cmdLists), cmdLists);
 
 	// 크기 변경을 위한 명령들이 처리될때까지 기다린다.
-	m_pGameInstance->m_pGraphic_Device->FlushCommandQueue();
-
-	while (true) {
-		//서버 연결 시 까지 대기
-		if (g_ServerConnected.load()) {
-
-			uint16 id = g_PlayerID.load();
-			//여기서 서버 연결됨 -> g_playerID에 따라 플레이어 리스트에 접근해서 아이디 값에 맞는 플레이어의 myPlayer(bool값) 을 True로 바꿔줘야함.
-			CBoxObj* pPlayer0 = CBoxObj::Create();
-			CBoxObj* pPlayer1 = CBoxObj::Create();
-			float p0[3] = {10,10,10};
-			
-			
-			pPlayer0->Set_Position(p0);
-
-			if (id == 0) {
-				pPlayer0->SetMyplayer();
-
-			}
-			else {
-				pPlayer1->SetMyplayer();
-
-			}
-
-			m_pGameInstance->AddObject("BoxObj", pPlayer0);
-			m_pGameInstance->AddObject("BoxObj", pPlayer1);
-
-
-			break;
-		}
-			
-	}
+	m_GameInstance->m_pGraphic_Device->FlushCommandQueue();
 
 
 	return S_OK;
@@ -456,9 +415,9 @@ void CMainApp::Prepare_Textures()
 {
 	std::vector<std::string> texNames =
 	{
-		"bricksDiffuseMap",
-		"bricksNormalMap",
-		"tileDiffuseMap",
+		"TerrainDiffuse",
+		"TerrainNormal",
+		"",
 		"tileNormalMap",
 		"defaultDiffuseMap",
 		"defaultNormalMap",
@@ -519,22 +478,22 @@ void CMainApp::CalculateFrameStats()
 
 void CMainApp::Update(const CTimer* Timer)
 {
-	m_pGameInstance->Update(m_pTimer);
+	m_GameInstance->Update(m_pTimer);
 }
 
 void CMainApp::Late_Update(const CTimer* Timer)
 {
-	m_pGameInstance->Late_Update(Timer);
+	m_GameInstance->Late_Update(Timer);
 }
 
 void CMainApp::Draw()
 {
-	m_pGameInstance->Draw();
+	m_GameInstance->Draw();
 }
 
 void CMainApp::Free()
 {
 	Safe_Release(m_pInput_Dev);
 	Safe_Release(m_pTimer);
-	Safe_Release(m_pGameInstance);
+	Safe_Release(m_GameInstance);
 }

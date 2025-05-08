@@ -12,6 +12,11 @@ void CRenderObject::Set_ObjCBIndex(const UINT& index)
     m_objCBIndex = index;
 }
 
+void CRenderObject::Set_RenderGroup(CRenderer::RENDERGROUP RG)
+{
+	m_RG = RG;
+}
+
 HRESULT CRenderObject::Initialize()
 {
     __super::Initialize(); 
@@ -28,15 +33,18 @@ void CRenderObject::Tick(float fTimeDelta)
 
 void CRenderObject::LateTick(float fTimeDelta)
 {
-	m_RendererCom->AddtoRenderObjects(this);
+	m_RendererCom->AddtoRenderObjects(m_RG,this);
 
 	auto FrameResource = m_GameInstance->GetCurrentFrameResource();
 	auto currObjectCB = FrameResource->m_ObjectCB;
 
 	XMMATRIX world = m_TransformCom->Get_WorldMatrix();
+	_matrix textransform = m_TexCoordTransformCom->Get_WorldMatrix();
 
 	ObjectConstants objConstants;
 	XMStoreFloat4x4(&objConstants.World, XMMatrixTranspose(world));
+	XMStoreFloat4x4(&objConstants.TexTransform, XMMatrixTranspose(world));
+	objConstants.MaterialIndex = m_MatIndex;
 
 	currObjectCB->CopyData(m_objCBIndex, objConstants);
 }

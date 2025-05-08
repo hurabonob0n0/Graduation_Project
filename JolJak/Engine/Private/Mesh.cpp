@@ -13,9 +13,7 @@ CMesh::CMesh(CMesh & rhs) : CVIBuffer(rhs)
 
 HRESULT CMesh::Initialize_Prototype(CModel::TYPE eModelType, const aiMesh * pAIMesh, const vector<class CBone*>& Bones, _fmatrix PivotMatrix)
 {
-	//Todo: //m_iMaterialIndex = pAIMesh->mMaterialIndex;
 	strcpy_s(m_szName, pAIMesh->mName.data);
-
 
 #ifndef _DEBUG
 	D3D12_GPU_VIRTUAL_ADDRESS	m_VertexBufferGPUaddress;
@@ -59,8 +57,6 @@ HRESULT CMesh::Initialize_Prototype(CModel::TYPE eModelType, const aiMesh * pAIM
 
 	__super::Create_Buffer(&m_IndexBufferGPU,&m_IndexBufferUploader, pIndices, m_IndexBufferByteSize);
 
-	int a = 0;
-
 	delete[] pIndices;
 	pIndices = nullptr;
 #pragma endregion
@@ -96,11 +92,11 @@ HRESULT CMesh::Bind_BoneMatrices(CShader * pShader, const vector<CBone*>& Bones,
 
 HRESULT CMesh::Ready_NonAnim_Mesh(const aiMesh * pAIMesh, _fmatrix PivotMatrix)
 {
-	m_VertexByteStride = sizeof(VTXPOSNOR);
+	m_VertexByteStride = sizeof(VTXMESH);
 	m_VertexBufferByteSize = m_VertexByteStride*m_VertexNum;
 
-	VTXPOSNOR* pVertices = new VTXPOSNOR[m_VertexNum];
-	ZeroMemory(pVertices, sizeof(VTXPOSNOR) * m_VertexNum);
+	VTXMESH* pVertices = new VTXMESH[m_VertexNum];
+	ZeroMemory(pVertices, sizeof(VTXMESH) * m_VertexNum);
 
 	for (size_t i = 0; i < m_VertexNum; i++)
 	{
@@ -110,8 +106,8 @@ HRESULT CMesh::Ready_NonAnim_Mesh(const aiMesh * pAIMesh, _fmatrix PivotMatrix)
 		memcpy(&pVertices[i].vNormal, &pAIMesh->mNormals[i], sizeof(_float3));
 		XMStoreFloat3(&pVertices[i].vNormal, XMVector3TransformNormal(XMLoadFloat3(&pVertices[i].vNormal), PivotMatrix));
 
-		/*memcpy(&pVertices[i].vTexcoord, &pAIMesh->mTextureCoords[0][i], sizeof(_float2));
-		memcpy(&pVertices[i].vTangent, &pAIMesh->mTangents[i], sizeof(_float3));*/
+		memcpy(&pVertices[i].vTexcoord, &pAIMesh->mTextureCoords[0][i], sizeof(_float2));
+		memcpy(&pVertices[i].vTangent, &pAIMesh->mTangents[i], sizeof(_float3));
 	}
 
 	__super::Create_Buffer(&m_VertexBufferGPU,&m_VertexBufferUploader, pVertices, m_VertexBufferByteSize);

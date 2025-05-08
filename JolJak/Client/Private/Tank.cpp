@@ -13,7 +13,8 @@ CTank::CTank() : CRenderObject()
 HRESULT CTank::Initialize()
 {
     __super::Initialize();
-    m_VIBufferCom = (CModel*)m_GameInstance->GetComponent("TankModel");//CModel::Create(m_GameInstance->Get_Device(), m_GameInstance->Get_CommandList(), CModel::TYPE_NONANIM, "../bin/Models/Tank/M1A2.FBX");
+    m_VIBufferCom = (CModel*)m_GameInstance->GetComponent("TankModel");
+
     return S_OK;
 }
 
@@ -31,7 +32,7 @@ void CTank::Render()
 {
     __super::Render();
 
-    m_VIBufferCom->Render();
+    //m_VIBufferCom->Render();
 }
 
 CTank* CTank::Create()

@@ -41,8 +41,8 @@
     <Filter Include="98.ForServer\ServiceManager">
       <UniqueIdentifier>{35a31056-9d75-4b76-9188-57a3d930fc09}</UniqueIdentifier>
     </Filter>
-    <Filter Include="97.ForGlobals">
-      <UniqueIdentifier>{d5f8c8bf-9d84-4b26-bc52-979bfefc00bb}</UniqueIdentifier>
+    <Filter Include="01.RenderObject\99.Camera">
+      <UniqueIdentifier>{c244ec62-fb63-499b-bb8b-f28c80be0f8d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -77,11 +77,11 @@
     <ClInclude Include="..\Public\ServiceManager.h">
       <Filter>98.ForServer\ServiceManager</Filter>
     </ClInclude>
+    <ClInclude Include="Globals.h">
+      <Filter>99.Headers</Filter>
+    </ClInclude>
     <ClInclude Include="..\Public\Client_Defines.h">
       <Filter>99.Headers\Default</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\CGlobals.h">
-      <Filter>97.ForGlobals</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -119,9 +119,6 @@
     </ClCompile>
     <ClCompile Include="..\Private\ServiceManager.cpp">
       <Filter>98.ForServer\ServiceManager</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\CGlobals.cpp">
-      <Filter>97.ForGlobals</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

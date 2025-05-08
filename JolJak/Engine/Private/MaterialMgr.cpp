@@ -2,12 +2,17 @@
 
 IMPLEMENT_SINGLETON(CMaterialMgr)
 
-void CMaterialMgr::Add_Material(string matName, MaterialConstants* matInstance)
+int CMaterialMgr::Add_Material(string matName, MaterialData matInstance)
 {
-    if (m_MatMap.find(matName) != m_MatMap.end())
-        return;
-
+    int index = 0;
+    for (auto pair : m_MatMap)
+    {
+        if (pair.first == matName)
+            return -index;
+        ++index;
+    }
     m_MatMap[matName] = matInstance;
+    return index;
 }
 
 _uint CMaterialMgr::Get_Mat_Index(string matName)

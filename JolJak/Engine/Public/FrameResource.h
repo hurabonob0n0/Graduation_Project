@@ -22,7 +22,7 @@ public:
     // that reference it.  So each frame needs their own cbuffers.
     CUploadBuffer<PassConstants>* m_PassCB = nullptr;
     CUploadBuffer<ObjectConstants>* m_ObjectCB = nullptr;
-   // CUploadBuffer<MaterialConstants>* m_MaterialCB = nullptr;
+    CUploadBuffer<MaterialData>* m_MaterialCB = nullptr;
 
     // Fence value to mark commands up to this fence point.  This lets us
     // check if these frame resources are still in use by the GPU.

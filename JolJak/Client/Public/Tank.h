@@ -19,7 +19,6 @@ public:
 	virtual void Tick(float fTimeDelta);
 	virtual void LateTick(float fTimeDelta);
 	virtual void Render();
-	//dslfkjdslkfjsdl
 
 private:
 	CModel* m_VIBufferCom;
