@@ -119,6 +119,21 @@ UINT64& CGameInstance::Get_Fence_Value()
 	return m_pGraphic_Device->Get_Fence_Value();
 }
 
+void CGameInstance::Reset_CommandList()
+{
+	m_pGraphic_Device->Reset_CommandList();
+}
+
+void CGameInstance::Execute_Commands()
+{
+	m_pGraphic_Device->Execute_Commands();
+}
+
+void CGameInstance::FlushCommandQueue()
+{
+	m_pGraphic_Device->FlushCommandQueue();
+}
+
 void CGameInstance::Draw_1()
 {
 	m_pGraphic_Device->Draw_1();
@@ -227,26 +242,7 @@ void CGameInstance::Build_RootSignatures()
 {
 	m_RootSignatureMgr = CRootSignatureMgr::Get_Instance();
 
-	CRootSignatureBuilder builder1;
-	builder1
-		.Push(RootParam::ObjectCB, D3D12_ROOT_PARAMETER_TYPE_CBV, 0, 0, D3D12_SHADER_VISIBILITY_ALL) // slot 0
-		.Push(RootParam::PassCB, D3D12_ROOT_PARAMETER_TYPE_CBV, 1, 0, D3D12_SHADER_VISIBILITY_ALL); // slot 1
-		//.Push(RootParam::MaterialBuffer, D3D12_ROOT_PARAMETER_TYPE_SRV, 0, 1, D3D12_SHADER_VISIBILITY_ALL) // slot 2
-		//.PushTable(RootParam::Textures, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL); // slot 3
-
-	m_RootSignatureMgr->Register("DefaultRS", Get_Device(), builder1);
-
-	//m_RootSignatureMgr = CRootSignatureMgr::Get_Instance();
-
-	//CRootSignatureBuilder builder1;
-	//builder1
-	//	.Push(RootParam::ObjectCB, D3D12_ROOT_PARAMETER_TYPE_CBV, 0, 0, D3D12_SHADER_VISIBILITY_ALL) // slot 0
-	//	.Push(RootParam::PassCB, D3D12_ROOT_PARAMETER_TYPE_CBV, 1, 0, D3D12_SHADER_VISIBILITY_ALL) // slot 1
-	//	.Push(RootParam::MaterialBuffer, D3D12_ROOT_PARAMETER_TYPE_SRV, 0, 1, D3D12_SHADER_VISIBILITY_ALL) // slot 2
-	//	.PushTable(RootParam::Textures, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL); // slot 3
-
-	//m_RootSignatureMgr->Register("DefaultRS", Get_Device(), builder1);
-
+	m_RootSignatureMgr->Register("DefaultRS", CRootSignature::Create()->CreateDefaultGraphicsRootSignature());
 
 }
 
@@ -254,8 +250,8 @@ void CGameInstance::Build_Shaders()
 {
 	m_ShaderMgr = CShader_Mgr::Get_Instance();
 
-	m_ShaderMgr->AddShader("DefaultVS", CShader::ST_VS, L"../Bin/Shader/Default.hlsl", nullptr);
-	m_ShaderMgr->AddShader("DefaultPS", CShader::ST_PS, L"../Bin/Shader/Default.hlsl", nullptr);
+	m_ShaderMgr->AddShader("DefaultVS", CShader::ST_VS, L"../Bin/ShadersForNormalMapping/Default.hlsl", nullptr);
+	m_ShaderMgr->AddShader("DefaultPS", CShader::ST_PS, L"../Bin/ShadersForNormalMapping/Default.hlsl", nullptr);
 
 	//m_ShaderMgr->AddShader("TerrainVS", CShader::ST_VS, L"../Bin/Shaders/Terrain.hlsl", nullptr);
 	//m_ShaderMgr->AddShader("TerrainPS", CShader::ST_PS, L"../Bin/Shaders/Terrain.hlsl", nullptr);
@@ -266,7 +262,7 @@ void CGameInstance::Build_PSOs()
 	m_PSOMgr = CPSOMgr::Get_Instance();
 	m_PSOMgr->AddPSO("DefaultPSO", m_RootSignatureMgr->Get("DefaultRS"), 
 		m_ShaderMgr->GetShaderObj("DefaultVS"), m_ShaderMgr->GetShaderObj("DefaultPS"),
-		m_pGraphic_Device, Get_Device(), CPSO::IT_POS_NOR);
+		m_pGraphic_Device, Get_Device(), CPSO::IT_MESH);
 
 	//m_PSOMgr->AddPSO("TerrainPSO", m_RootSignatureMgr->Get("TerrainRS"),
 	//	m_ShaderMgr->GetShaderObj("TerrainVS"), m_ShaderMgr->GetShaderObj("TerrainPS"),
@@ -366,12 +362,8 @@ void CGameInstance::OnResize()
 
 void CGameInstance::Free()
 {
-	//m_pGraphic_Device->FlushCommandQueue();
 
-	m_pGraphic_Device->Get_CommandQueue()->Wait(Get_Fence(), m_FrameResourceMgr->Get_Final_Fence());
-
-	UINT64 a = m_pGraphic_Device->Get_Fence_Value();
-	UINT64 b = m_FrameResourceMgr->Get_Final_Fence();
+	FlushCommandQueue(m_FrameResourceMgr->Get_Final_Fence());
 
 	Safe_Release(m_Input_Dev);
 	Safe_Release(m_RootSignatureMgr);
@@ -382,5 +374,7 @@ void CGameInstance::Free()
 	Safe_Release(m_ObjMgr);
 	Safe_Release(m_ComMgr);
 	Safe_Release(m_pGraphic_Device);
+	Safe_Release(m_MaterialMgr);
+	Safe_Release(m_TextureMgr);
 }
 

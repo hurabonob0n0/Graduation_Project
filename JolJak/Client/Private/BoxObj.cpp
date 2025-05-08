@@ -21,29 +21,21 @@ HRESULT CBoxObj::Initialize()
 
 void CBoxObj::Tick(float fTimeDelta)
 {
-    _float4 Position;
+    if (m_GameInstance->Key_Pressing(VK_UP))
+        m_TransformCom->Go_Straight(fTimeDelta * 5.f);
 
-   
+    if (m_GameInstance->Key_Pressing(VK_DOWN))
+        m_TransformCom->Go_Backward(fTimeDelta * 5.f);
 
-    if (m_bMyPlayer == true) {
-        if (m_GameInstance->Key_Pressing(VK_UP)) {
-            m_TransformCom->Go_Straight(fTimeDelta * 5.f);
-            XMStoreFloat4(&Position, m_TransformCom->Get_State(CTransform::STATE_POSITION));
-            SendBufferRef sendBuffer = ClientPacketHandler::Make_C_MOVE(Position.x, Position.y, Position.z );
-            ServiceManager::GetInstace().GetService()->Broadcast(sendBuffer);
+    if (m_GameInstance->Key_Pressing(VK_RIGHT))
+        m_TransformCom->Go_Right(fTimeDelta* 5.f);
 
-        }
-        if (m_GameInstance->Key_Pressing(VK_DOWN))
-            m_TransformCom->Go_Backward(fTimeDelta * 5.f);
+    if (m_GameInstance->Key_Pressing(VK_LEFT))
+        m_TransformCom->Go_Left(fTimeDelta* 5.f);
 
-        if (m_GameInstance->Key_Pressing(VK_RIGHT))
-            m_TransformCom->Go_Right(fTimeDelta * 5.f);
+   // _float4 Position;
 
-        if (m_GameInstance->Key_Pressing(VK_LEFT))
-            m_TransformCom->Go_Left(fTimeDelta * 5.f);
- 
-    }
-   
+   // XMStoreFloat4(&Position, m_TransformCom->Get_State(CTransform::STATE_POSITION));
    // 
    // float TerrainY = ((CVIBuffer_Terrain*)(m_GameInstance->GetPrototype("TerrainCom")))->Get_Terrain_Heights(Position.x,Position.z);
 
@@ -53,7 +45,7 @@ void CBoxObj::Tick(float fTimeDelta)
   
 #pragma region MakeSendBuffer & Send Data
 
-   //SendBufferRef sendBuffer = ClientPacketHandler::Make_C_MOVE(Position.x, 0.f, Position.z);
+   //SendBufferRef sendBuffer = ClientPacketHandler::Make_C_MOVE(Position.x, TerrainY, Position.z);
    //ServiceManager::GetInstace().GetService()->Broadcast(sendBuffer);
 
 #pragma endregion TODO : 여기 좌표 수정 필요

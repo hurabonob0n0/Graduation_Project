@@ -35,6 +35,10 @@ public:			// For Graphic_Dev
 	ID3D12CommandAllocator* Get_CommandAlloc() const; 
 	ID3D12Fence* Get_Fence() const; 
 	UINT64& Get_Fence_Value();
+	void Reset_CommandList();
+	void Execute_Commands();
+	void FlushCommandQueue();
+	void FlushCommandQueue(UINT64 finalValue) { m_pGraphic_Device->FlushCommandQueue(finalValue); }
 	void Draw_1();
 	void Draw_2();
 
@@ -83,12 +87,11 @@ public:			// For InputMgr
 	SHORT Get_Mouse_YDelta() { return m_Input_Dev->Get_Mouse_YDelta(); }
 
 public:			// For TextureMgr
-	void Add_Texture(string texname, CTexture* texInstance) { m_TextureMgr->Add_Texture(texname, texInstance); }
+	int Add_Texture(string texname, CTexture* texInstance) { return m_TextureMgr->Add_Texture(texname, texInstance); }
 	ID3D12Resource* Get_Texture(string texname) { return m_TextureMgr->Get_Texture(texname); }
-	_uint Get_Tex_Index(string texname) { return m_TextureMgr->Get_Tex_Index(texname); }
 
 public:			// For MatMgr
-	void Add_Material(string matName, MaterialConstants* matInstance) { m_MaterialMgr->Add_Material(matName, matInstance); }
+	int Add_Material(string matName, MaterialData matInstance) { return m_MaterialMgr->Add_Material(matName, matInstance); }
 	_uint Get_Mat_Index(string matName) { return m_MaterialMgr->Get_Mat_Index(matName); }
 
 public:

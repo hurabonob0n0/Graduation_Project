@@ -12,7 +12,7 @@ void CFrameResource::Initialize(ID3D12Device* device)
 
     m_PassCB = CUploadBuffer<PassConstants>::Create(device, 1, true);
     m_ObjectCB = CUploadBuffer<ObjectConstants>::Create(device, 1000, true);
-    //m_MaterialCB = CUploadBuffer<MaterialConstants>::Create(device, 1000, true);
+    m_MaterialCB = CUploadBuffer<MaterialData>::Create(device, 100, true);
 }
 
 CFrameResource* CFrameResource::Create(ID3D12Device* device)
@@ -27,5 +27,5 @@ void CFrameResource::Free()
     Safe_Release(m_CmdListAlloc);
     Safe_Release(m_PassCB);
     Safe_Release(m_ObjectCB);
-    //Safe_Release(m_MaterialCB);
+    Safe_Release(m_MaterialCB);
 }

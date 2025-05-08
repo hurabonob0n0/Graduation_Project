@@ -1,4 +1,4 @@
-#include "RootSignatures.h"
+﻿#include "RootSignatures.h"
 
 CRootSignatureBuilder& CRootSignatureBuilder::Push(RootParam param, D3D12_ROOT_PARAMETER_TYPE paramType,
     UINT shaderRegister, UINT registerSpace,
@@ -26,20 +26,24 @@ CRootSignatureBuilder& CRootSignatureBuilder::Push(RootParam param, D3D12_ROOT_P
 CRootSignatureBuilder& CRootSignatureBuilder::PushTable(RootParam param, D3D12_DESCRIPTOR_RANGE_TYPE rangeType,
     UINT shaderRegister, UINT registerSpace, UINT numDescriptors,
     D3D12_SHADER_VISIBILITY visibility) {
-    D3D12_DESCRIPTOR_RANGE range{};
-    range.RangeType = rangeType;
-    range.NumDescriptors = numDescriptors;
-    range.BaseShaderRegister = shaderRegister;
-    range.RegisterSpace = registerSpace;
-    range.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+    // 1. 새로운 Range 리스트를 하나 만든다.
+    mTableRanges.emplace_back(); // 새 vector 하나 추가
+    auto& rangeVec = mTableRanges.back();
+    rangeVec.resize(1);          // range 1개만 사용
 
-    mRanges.push_back(range);
+    // 2. range 채우기
+    rangeVec[0].RangeType = rangeType;
+    rangeVec[0].NumDescriptors = numDescriptors;
+    rangeVec[0].BaseShaderRegister = shaderRegister;
+    rangeVec[0].RegisterSpace = registerSpace;
+    rangeVec[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
+    // 3. root parameter 설정
     D3D12_ROOT_PARAMETER rp{};
     rp.ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
     rp.ShaderVisibility = visibility;
     rp.DescriptorTable.NumDescriptorRanges = 1;
-    rp.DescriptorTable.pDescriptorRanges = &mRanges.back();
+    rp.DescriptorTable.pDescriptorRanges = rangeVec.data(); // 🔥 포인터가 항상 유효
 
     mParams.push_back(rp);
     mParamMap[param] = static_cast<UINT>(mParams.size() - 1);
@@ -48,11 +52,20 @@ CRootSignatureBuilder& CRootSignatureBuilder::PushTable(RootParam param, D3D12_D
 
 ID3D12RootSignature* CRootSignatureBuilder::Build(ID3D12Device* device,
     D3D12_ROOT_SIGNATURE_FLAGS flags) {
+
+    for (int i = 0; i < mParams.size(); ++i) {
+        if (mParams[i].ParameterType == D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE) {
+            assert(mParams[i].DescriptorTable.NumDescriptorRanges > 0);
+            assert(mParams[i].DescriptorTable.pDescriptorRanges != nullptr);
+        }
+    }
+
+    auto staticSamplers = GetStaticSamplers();
     D3D12_ROOT_SIGNATURE_DESC desc{};
     desc.NumParameters = static_cast<UINT>(mParams.size());
     desc.pParameters = mParams.data();
-    desc.NumStaticSamplers = 0;
-    desc.pStaticSamplers = nullptr;
+    desc.NumStaticSamplers = staticSamplers.size();
+    desc.pStaticSamplers = staticSamplers.data();
     desc.Flags = flags;
 
     ID3DBlob* sigBlob;

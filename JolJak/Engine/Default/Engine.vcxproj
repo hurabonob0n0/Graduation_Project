@@ -181,8 +181,8 @@
     <ClInclude Include="..\public\PSO.h" />
     <ClInclude Include="..\public\Raw_Input.h" />
     <ClInclude Include="..\public\RenderObject.h" />
+    <ClInclude Include="..\public\RootSignature.h" />
     <ClInclude Include="..\public\RootSignatureMgr.h" />
-    <ClInclude Include="..\public\RootSignatures.h" />
     <ClInclude Include="..\public\Shader.h" />
     <ClInclude Include="..\public\Shader_Mgr.h" />
     <ClInclude Include="..\public\Texture.h" />
@@ -220,8 +220,8 @@
     <ClCompile Include="..\private\PSO.cpp" />
     <ClCompile Include="..\private\Raw_Input.cpp" />
     <ClCompile Include="..\private\RenderObject.cpp" />
+    <ClCompile Include="..\private\RootSignature.cpp" />
     <ClCompile Include="..\private\RootSignatureMgr.cpp" />
-    <ClCompile Include="..\private\RootSignatures.cpp" />
     <ClCompile Include="..\private\Shader.cpp" />
     <ClCompile Include="..\private\Shader_Mgr.cpp" />
     <ClCompile Include="..\private\Texture.cpp" />

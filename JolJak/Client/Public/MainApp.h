@@ -59,15 +59,13 @@ private:
 	std::wstring                m_MainWndCaption = L"Two the Tanks";
 
 private:
-	CGameInstance*		m_pGameInstance = { nullptr };
+	CGameInstance*		m_GameInstance = { nullptr };
 	//CInput_Device*		m_pInput_Dev{ nullptr };
 	CRawInput_Device* m_pInput_Dev{ nullptr };
 	CTimer*				m_pTimer = { nullptr };
 
 public:
 	virtual void Free() override;
-
-
 };
 
 
