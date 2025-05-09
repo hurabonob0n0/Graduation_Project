@@ -85,7 +85,7 @@ void ServerPacketHandler::Handle_C_KEYINPUT(PacketSessionRef& session, BYTE* buf
 
 
 	// 속도 설정.
-	// 교수님이 원하는게 탱크 궤도.. 댐핑 -> 서버에서 구현한다 
+	// 교수님이 원하시는게 탱크 궤도.. 댐핑 -> 서버에서 구현한다 ?
 	//
 	// 따로 쓰레드 하나 만들어서 -> firstDown
 
@@ -123,6 +123,7 @@ void ServerPacketHandler::Handle_C_MOVEMENT(PacketSessionRef& session, BYTE* buf
 			Temp = GRoom.GetPlayerPos(0);
 
 		}
+
 
 		auto sendbuffer = Make_S_PLAYER_MOVED(Temp);
 		session->Send(sendbuffer);
