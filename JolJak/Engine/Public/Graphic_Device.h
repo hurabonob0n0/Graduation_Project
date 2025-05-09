@@ -27,9 +27,6 @@ public:
     void CreateRtvAndDsvDescriptorHeaps();
     void OnResize();
     void FlushCommandQueue();
-    void FlushCommandQueue(UINT64 finalValue);
-    void Reset_CommandList();
-    void Execute_Commands();
 
 public:
     bool Draw_1();

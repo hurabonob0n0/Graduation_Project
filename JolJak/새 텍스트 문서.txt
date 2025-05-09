@@ -1,0 +1,238 @@
+그래 하나씩 차근차근 하는 게 좋을 거 같아
+순서는 1. 큐브 하나 그리기 2. 큐브에 조명을 통해 명암 넣기 3. 터레인 그리기 4. SKYBox 적용하기
+5. 그림자 만들기 6. 내 Tank Model Import 해서 그리기 순으로 할 거 같아.
+
+[1단계] 큐브 하나 그리기 — 해야 할 작업 순서 요약
+📦 전제
+목표: Direct3D 12에서 큐브 하나를 화면에 출력하는 것
+
+✅ 1. 기초 시스템 준비
+
+항목	설명
+✔️ Device / SwapChain / CommandQueue	이미 Direct3D 12 초기화 완료되어 있다고 가정
+✔️ Viewport & ScissorRect	설정해둠
+✅ 2. 큐브 데이터 준비 (정점 & 인덱스 버퍼)
+
+항목	설명
+CVIBuffer 클래스	Vertex/Index 버퍼를 관리하는 클래스
+Vertex 배열	Position, Normal, TexCoord 등
+Index 배열	삼각형 정의
+Default Buffer & Upload Buffer 생성	GPU 자원으로 업로드 (UploadBuffer 사용)
+✅ 3. 셰이더 준비
+
+항목	설명
+VS (Vertex Shader)	월드 → 뷰 → 프로젝션 행렬 곱하기
+PS (Pixel Shader)	색을 그냥 고정값으로 출력해도 됨
+CShader 클래스	HLSL 파일 읽고 컴파일해서 ID3DBlob* 보관
+✅ 4. 루트 시그니처 & 상수버퍼
+
+항목	설명
+CRootSignature	b0 (ObjectConstant), b1 (PassConstant)
+CFrameResource	ObjectCB, PassCB 만들어서 프레임마다 갱신
+CComponent	렌더링에 필요한 구성요소들 묶기 시작해도 좋음
+✅ 5. PSO 생성
+
+항목	설명
+D3D12_GRAPHICS_PIPELINE_STATE_DESC	PSO 만들기
+셰이더 연결	mShaders["vs"], mShaders["ps"]
+Input Layout 설정	POSITION, COLOR or TEXCOORD
+RasterizerState, DepthStencilState, Blend 설정	기본값이면 충분
+✅ 6. 카메라 & 상수버퍼 설정
+
+항목	설명
+뷰 행렬	카메라 위치, 타겟, Up 벡터로 LookAt
+프로젝션 행렬	FOV, Aspect, Near, Far 설정
+PassConstants에 담아서 CB에 복사	
+✅ 7. 큐브 렌더링용 클래스 구성
+
+클래스	역할
+CGameObject	위치, 회전, 스케일
+CRenderItem	VertexBuffer, IndexBuffer, CBIndex 등 묶기
+CMaterial	색이나 텍스처는 나중에 붙일 거니까 지금은 생략 가능
+✅ 8. Draw 함수에서 드로우 콜
+
+항목	설명
+CBV, RootSignature 바인딩	
+Vertex/IndexBuffer 바인딩	
+PrimitiveTopology 설정	
+DrawIndexedInstanced() 호출	
+✅ 9. 실행 확인
+큐브가 화면 중앙에 보이면 성공!
+
+회전시키면서 변환 행렬 적용 확인해도 좋음
+
+🎯 한 줄 요약
+정점 데이터 → 버퍼 생성 → 셰이더 → 루트시그니처 → PSO → 드로우콜까지 연결!
+
+✨ 필요한 데이터 구조
+ObjectConstants.h
+cpp
+복사
+편집
+struct ObjectConstants
+{
+    DirectX::XMFLOAT4X4 World = MathHelper::Identity4x4();
+};
+(※ MathHelper::Identity4x4()는 단위행렬 반환하는 함수야. 없으면 직접 만들어도 돼!)
+
+✨ 큐브 정점 & 인덱스
+cpp
+복사
+편집
+struct Vertex
+{
+    DirectX::XMFLOAT3 Pos;
+    DirectX::XMFLOAT4 Color;
+};
+
+std::array<Vertex, 8> vertices =
+{
+    Vertex({{-1.0f, -1.0f, -1.0f}, {Colors::White}}),
+    Vertex({{-1.0f, +1.0f, -1.0f}, {Colors::Black}}),
+    Vertex({{+1.0f, +1.0f, -1.0f}, {Colors::Red}}),
+    Vertex({{+1.0f, -1.0f, -1.0f}, {Colors::Green}}),
+    Vertex({{-1.0f, -1.0f, +1.0f}, {Colors::Blue}}),
+    Vertex({{-1.0f, +1.0f, +1.0f}, {Colors::Yellow}}),
+    Vertex({{+1.0f, +1.0f, +1.0f}, {Colors::Cyan}}),
+    Vertex({{+1.0f, -1.0f, +1.0f}, {Colors::Magenta}})
+};
+
+std::array<std::uint16_t, 36> indices =
+{
+    0,1,2, 0,2,3,
+    4,6,5, 4,7,6,
+    4,5,1, 4,1,0,
+    3,2,6, 3,6,7,
+    1,5,6, 1,6,2,
+    4,0,3, 4,3,7
+};
+✨ 셰이더 코드 (HLSL)
+Shaders\Color.hlsl
+hlsl
+복사
+편집
+cbuffer cbObject : register(b0)
+{
+    float4x4 gWorldViewProj;
+};
+
+struct VSInput
+{
+    float3 PosL : POSITION;
+    float4 Color : COLOR;
+};
+
+struct PSInput
+{
+    float4 PosH : SV_POSITION;
+    float4 Color : COLOR;
+};
+
+PSInput VS(VSInput vin)
+{
+    PSInput vout;
+    vout.PosH = mul(float4(vin.PosL, 1.0f), gWorldViewProj);
+    vout.Color = vin.Color;
+    return vout;
+}
+
+float4 PS(PSInput pin) : SV_Target
+{
+    return pin.Color;
+}
+그냥 World-View-Projection 해서 컬러를 넘겨줌
+
+조명 없고 기본 색깔만 뿌리는거야
+
+✨ 주요 초기화 과정
+Vertex/Index 버퍼를 GPU에 올리고
+
+Root Signature 설정 (상수버퍼 하나만)
+
+셰이더 컴파일
+
+PSO 만들기
+
+(이건 네가 아까까지 같이 했던 과정이라 익숙할 거야!)
+
+✨ Update() 함수
+cpp
+복사
+편집
+void Update(const GameTimer& gt)
+{
+    // 회전값 갱신
+    mTheta += 0.5f * gt.DeltaTime(); // 초당 0.5 라디안 회전
+
+    // 회전행렬 계산
+    XMMATRIX R = XMMatrixRotationY(mTheta);
+
+    // CB 업데이트
+    ObjectConstants objConstants;
+    XMStoreFloat4x4(&objConstants.World, XMMatrixTranspose(R));
+
+    mCurrFrameResource->ObjectCB->CopyData(0, objConstants);
+}
+mTheta는 멤버변수로 float mTheta = 0.0f;
+
+회전한 월드행렬을 상수버퍼에 복사해주는거야.
+
+✨ Draw() 함수 (간단하게)
+cpp
+복사
+편집
+void Draw(ID3D12GraphicsCommandList* cmdList)
+{
+    cmdList->SetPipelineState(mPSO.Get());
+    cmdList->SetGraphicsRootSignature(mRootSignature.Get());
+
+    auto objectCB = mCurrFrameResource->ObjectCB->Resource();
+    cmdList->SetGraphicsRootConstantBufferView(0, objectCB->GetGPUVirtualAddress());
+
+    cmdList->IASetVertexBuffers(0, 1, &mVertexBufferView);
+    cmdList->IASetIndexBuffer(&mIndexBufferView);
+    cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+    cmdList->DrawIndexedInstanced(36, 1, 0, 0, 0);
+}
+✅ 큐브 렌더링 구조 요약
+text
+복사
+편집
+Update() : 회전 변환
+↓
+ObjectConstants 업데이트
+↓
+Draw() : VertexBuffer/IndexBuffer 바인딩
+↓
+DrawIndexedInstanced() 호출
+↓
+화면에 큐브 출력
+✨ 추가로
+나중에는
+
+CMaterial 만들고
+
+CShader 따로 관리하고
+
+CGameObject로 관리하고
+
+CRenderItem으로 모듈화해서
+
+이 구조를 쭉 발전시켜 나가면 된다! 🚀
+
+🔥정리
+큐브 하나 그리는 거는
+정점/인덱스 + 셰이더 + RootSignature + PSO + CB 업데이트 + Draw 콜
+만 있으면 된다!!
+
+👉 지금 바로
+이대로 따라해보고
+
+화면에 큐브 뜨는지
+
+회전하는지
+
+확인하면 돼!
+
+

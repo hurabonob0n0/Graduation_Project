@@ -23,16 +23,6 @@ public:
 private:
 	CVIBuffer_Geos* m_VIBufferCom;
 
-
-public:
-	void set_MyPlayer() {
-		_myPlayer = true;
-
-	}
-private:
-	bool _myPlayer = false;
-
-
 public:
 	static CBoxObj* Create();
 	virtual void Free() override;

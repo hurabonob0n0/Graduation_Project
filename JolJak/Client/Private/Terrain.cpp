@@ -11,9 +11,8 @@ HRESULT CTerrain::Initialize()
 {
     __super::Initialize();
     m_VIBufferCom = (CVIBuffer_Terrain*)m_GameInstance->GetComponent("TerrainCom");
-    /*mat.DiffuseMapIndex = m_GameInstance->Add_Texture("M1A2_Fences_Base_color", CTexture::Create(L"../Bin/M1A2_Fences_Base_color.dds"));
-    mat.NormalMapIndex = m_GameInstance->Add_Texture("M1A2_Fences_Normal", CTexture::Create(L"../Bin/M1A2_Fences_Normal.dds"));
-    Set_MatIndex(m_GameInstance->Add_Material("M1A2_Fences_mat", mat));*/
+
+    //m_TransformCom->Set_State(CTransform::STATE_POSITION, { 0.f,0.f,30.f,1.f });
 
     return S_OK;
 }

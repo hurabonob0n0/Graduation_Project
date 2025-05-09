@@ -31,12 +31,9 @@ public:
 
     UINT GetRootParamIndex(RootParam param) const;
 
-    
-
 private:
     std::vector<D3D12_ROOT_PARAMETER> mParams;
     std::vector<D3D12_DESCRIPTOR_RANGE> mRanges;
-    std::vector<std::vector<D3D12_DESCRIPTOR_RANGE>> mTableRanges;
     std::unordered_map<RootParam, UINT> mParamMap;
 
 public:
