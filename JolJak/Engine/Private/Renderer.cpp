@@ -5,45 +5,20 @@ CRenderer::CRenderer(ID3D12Device* pDevice, ID3D12GraphicsCommandList* pCommandL
 {
 }
 
-void CRenderer::AddtoRenderObjects(RENDERGROUP RG,CRenderObject* pRenderObject)
+void CRenderer::AddtoRenderObjects(CRenderObject* pRenderObject)
 {
     Safe_AddRef(pRenderObject);
-    pRenderObject->Set_ObjCBIndex(m_vRenderObjects[RG].size());
-    m_vRenderObjects[RG].push_back(pRenderObject);
+    pRenderObject->Set_ObjCBIndex(m_vRenderObjects.size());
+    m_vRenderObjects.push_back(pRenderObject);
 }
 
 void CRenderer::ResetRenderObjects()
 {
-    for (auto& pRenderObject : m_vRenderObjects[RG_PRIORITY]) {
+    for (auto& pRenderObject : m_vRenderObjects) {
         pRenderObject->Set_ObjCBIndex(-1);
         Safe_Release(pRenderObject);
     }
-    m_vRenderObjects[RG_PRIORITY].clear();
-
-    for (auto& pRenderObject : m_vRenderObjects[RG_NONLIGHT]) {
-        pRenderObject->Set_ObjCBIndex(-1);
-        Safe_Release(pRenderObject);
-    }
-    m_vRenderObjects[RG_NONLIGHT].clear();
-
-
-    for (auto& pRenderObject : m_vRenderObjects[RG_NONBLEND]) {
-        pRenderObject->Set_ObjCBIndex(-1);
-        Safe_Release(pRenderObject);
-    }
-    m_vRenderObjects[RG_NONBLEND].clear();
-
-    for (auto& pRenderObject : m_vRenderObjects[RG_BLEND]) {
-        pRenderObject->Set_ObjCBIndex(-1);
-        Safe_Release(pRenderObject);
-    }
-    m_vRenderObjects[RG_BLEND].clear();
-
-    for (auto& pRenderObject : m_vRenderObjects[RG_UI]) {
-        pRenderObject->Set_ObjCBIndex(-1);
-        Safe_Release(pRenderObject);
-    }
-    m_vRenderObjects[RG_UI].clear();
+    m_vRenderObjects.clear();
 }
 
 HRESULT CRenderer::Initialize_Prototype()
@@ -58,51 +33,8 @@ HRESULT CRenderer::Initialize(void* pArg)
 
 void CRenderer::Render()
 {
-    Render_Priority();
-	Render_NonLight();
-	Render_NonBlend();
-	Render_Blend();
-	Render_UI();
-}
-
-void CRenderer::Render_Priority()
-{
-    for (auto& pGameObject : m_vRenderObjects[RG_PRIORITY])
-    {
-        pGameObject->Render();
-    }
-}
-
-void CRenderer::Render_NonLight()
-{
-    for (auto& pGameObject : m_vRenderObjects[RG_NONLIGHT])
-    {
-        pGameObject->Render();
-    }
-}
-
-void CRenderer::Render_NonBlend()
-{
-    for (auto& pGameObject : m_vRenderObjects[RG_NONBLEND])
-    {
-        pGameObject->Render();
-    }
-}
-
-void CRenderer::Render_Blend()
-{
-    for (auto& pGameObject : m_vRenderObjects[RG_BLEND])
-    {
-        pGameObject->Render();
-    }
-}
-
-void CRenderer::Render_UI()
-{
-    for (auto& pGameObject : m_vRenderObjects[RG_UI])
-    {
-        pGameObject->Render();
-    }
+    for (auto& RO : m_vRenderObjects)
+        RO->Render();
 }
 
 CRenderer* CRenderer::Create(ID3D12Device* pDevice, ID3D12GraphicsCommandList* pCommandList)

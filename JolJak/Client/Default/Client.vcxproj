@@ -149,7 +149,7 @@
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
       <AdditionalIncludeDirectories>../Public/;../../Reference/Headers/</AdditionalIncludeDirectories>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
@@ -166,7 +166,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\BoxObj.h" />
-    <ClInclude Include="..\Public\CGlobals.h" />
     <ClInclude Include="..\Public\ClientPacketHandler.h" />
     <ClInclude Include="..\Public\Client_Defines.h" />
     <ClInclude Include="..\Public\MainApp.h" />
@@ -175,13 +174,13 @@
     <ClInclude Include="..\public\Tank.h" />
     <ClInclude Include="..\public\Terrain.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="Globals.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\BoxObj.cpp" />
-    <ClCompile Include="..\Private\CGlobals.cpp" />
     <ClCompile Include="..\Private\ClientPacketHandler.cpp" />
     <ClCompile Include="..\Private\MainApp.cpp" />
     <ClCompile Include="..\private\Player.cpp" />

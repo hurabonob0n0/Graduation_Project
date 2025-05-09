@@ -8,14 +8,11 @@ class CRenderObject;
 class ENGINE_DLL CRenderer : public CComponent_DC
 {
 public:
-	enum RENDERGROUP { RG_PRIORITY, RG_NONLIGHT, RG_NONBLEND, RG_BLEND, RG_UI, RG_END };
-
-public:
 	CRenderer(ID3D12Device* pDevice, ID3D12GraphicsCommandList* pCommandList);
 	virtual ~CRenderer() = default;
 
 public:
-	void AddtoRenderObjects(RENDERGROUP RG, CRenderObject* pRenderObject);
+	void AddtoRenderObjects(CRenderObject* pRenderObject);
 	void ResetRenderObjects();
 
 public:
@@ -24,14 +21,7 @@ public:
 	void Render();
 
 private:
-	vector<CRenderObject*> m_vRenderObjects[RG_END];
-
-public:
-	void Render_Priority();
-	void Render_NonLight();
-	void Render_NonBlend();
-	void Render_Blend();
-	void Render_UI();
+	vector<CRenderObject*> m_vRenderObjects;
 
 private:
 	//Todo : 나중에 PSO, RootSignature, FrameResource 등등 렌더링에 필요한 것들을 모두 모아놓고 Render()함수 안에서 처리하도록 만든다.

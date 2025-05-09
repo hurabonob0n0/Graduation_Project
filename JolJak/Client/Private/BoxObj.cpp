@@ -21,41 +21,18 @@ HRESULT CBoxObj::Initialize()
 
 void CBoxObj::Tick(float fTimeDelta)
 {
-    _float4 Position;
+    if (m_GameInstance->Key_Pressing(VK_UP))
+        m_TransformCom->Go_Straight(fTimeDelta * 5.f);
 
-    if (_myPlayer) {
+    if (m_GameInstance->Key_Pressing(VK_DOWN))
+        m_TransformCom->Go_Backward(fTimeDelta * 5.f);
 
-        if (m_GameInstance->Key_Pressing(VK_UP)) {
-            m_TransformCom->Go_Straight(fTimeDelta * 5.f);
-            XMStoreFloat4(&Position, m_TransformCom->Get_State(CTransform::STATE_POSITION));
-            SendBufferRef sendBuffer = ClientPacketHandler::Make_C_MOVE(Position.x, Position.y, Position.z);
-            ServiceManager::GetInstace().GetService()->Broadcast(sendBuffer);
-        }
+    if (m_GameInstance->Key_Pressing(VK_RIGHT))
+        m_TransformCom->Go_Right(fTimeDelta* 5.f);
 
+    if (m_GameInstance->Key_Pressing(VK_LEFT))
+        m_TransformCom->Go_Left(fTimeDelta* 5.f);
 
-        if (m_GameInstance->Key_Pressing(VK_DOWN)) {
-            m_TransformCom->Go_Backward(fTimeDelta * 5.f);
-            XMStoreFloat4(&Position, m_TransformCom->Get_State(CTransform::STATE_POSITION));
-            SendBufferRef sendBuffer = ClientPacketHandler::Make_C_MOVE(Position.x, Position.y, Position.z);
-            ServiceManager::GetInstace().GetService()->Broadcast(sendBuffer);
-        }
-
-
-        if (m_GameInstance->Key_Pressing(VK_RIGHT)) {
-            m_TransformCom->Go_Right(fTimeDelta * 5.f);
-            XMStoreFloat4(&Position, m_TransformCom->Get_State(CTransform::STATE_POSITION));
-            SendBufferRef sendBuffer = ClientPacketHandler::Make_C_MOVE(Position.x, Position.y, Position.z);
-            ServiceManager::GetInstace().GetService()->Broadcast(sendBuffer);
-
-        }
-        if (m_GameInstance->Key_Pressing(VK_LEFT)) {
-            m_TransformCom->Go_Left(fTimeDelta * 5.f);
-            XMStoreFloat4(&Position, m_TransformCom->Get_State(CTransform::STATE_POSITION));
-            SendBufferRef sendBuffer = ClientPacketHandler::Make_C_MOVE(Position.x, Position.y, Position.z);
-            ServiceManager::GetInstace().GetService()->Broadcast(sendBuffer);
-        }
-
-    }
    // _float4 Position;
 
    // XMStoreFloat4(&Position, m_TransformCom->Get_State(CTransform::STATE_POSITION));

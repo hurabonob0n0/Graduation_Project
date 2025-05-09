@@ -1,8 +1,5 @@
 #pragma once
 
-#define GETDEVICE		CGameInstance::Get_Instance()->Get_Device()
-#define GETCOMMANDLIST	CGameInstance::Get_Instance()->Get_CommandList()
-
 #define D3DCOLOR_ABGR(a,r,g,b) \
     ((D3DCOLOR)((((a)&0xff)<<24)|(((r)&0xff)<<16)|(((g)&0xff)<<8)|((b)&0xff)))
 
@@ -12,7 +9,9 @@
 	char	szMessage[MAX_PATH] = "";											\
 	strcpy_s(szMessage, typeid(CLASSNAME).name());								\
 	strcat_s(szMessage, "is nullptr");											\
-	MessageBoxA(0, szMessage, nullptr, MB_OK);}									\														\
+	MessageBoxA(0, szMessage, nullptr, MB_OK);}									\
+	else {																		\
+	pInstance->AddRef();}														\
 	return pInstance;															\
 	}();
 

@@ -11,13 +11,13 @@ private:
 	virtual~CMaterialMgr() = default;
 
 public:
-	int Add_Material(string matName, MaterialData matInstance);
+	void Add_Material(string matName, MaterialConstants* matInstance);
 
 public:
 	_uint Get_Mat_Index(string matName);
 
 private:
-	unordered_map<string, MaterialData> m_MatMap;
+	unordered_map<string, MaterialConstants*> m_MatMap;
 
 public:
 	void Free();

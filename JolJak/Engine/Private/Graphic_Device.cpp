@@ -260,41 +260,6 @@ void CGraphic_Device::FlushCommandQueue()
     }
 }
 
-void CGraphic_Device::FlushCommandQueue(UINT64 finalValue)
-{
-    m_CurrentFence++;
-
-    // 커맨드들의 처리는 GPU에서 진행되기 때문에 언제 커맨드들이 처리됬는지를 CPU에서 알기 힘듭니다.
-    // 그러므로 모든 커맨드가 처리됬을 때 새 펜스 지점을 설정하는 인스트럭션을 커맨드 큐에 추가합니다.
-    // Signal()을 호출하기 전에 제출한 커맨드들이 처리되기 전까지 새 펜스 지점은 설정되지 않습니다.
-    ThrowIfFailed(m_CommandQueue->Signal(m_Fence, m_CurrentFence));
-
-    // GPU가 새 펜스 지점까지의 명령들을 완료할 때까지 기다립니다.
-    if (m_Fence->GetCompletedValue() < m_CurrentFence)
-    {
-        HANDLE eventHandle = CreateEventEx(nullptr, nullptr, 0, EVENT_ALL_ACCESS);
-
-        // GPU가 새 펜스 지점에 도달했으면 이벤트를 발동시킵니다.
-        ThrowIfFailed(m_Fence->SetEventOnCompletion(finalValue, eventHandle));
-
-        // GPU가 새 펜스를 설정하고 이벤트가 발동될때까지 기다립니다.
-        WaitForSingleObject(eventHandle, INFINITE);
-        CloseHandle(eventHandle);
-    }
-}
-
-void CGraphic_Device::Reset_CommandList()
-{
-    ThrowIfFailed(m_CommandList->Reset(m_DirectCmdListAlloc, nullptr));
-}
-
-void CGraphic_Device::Execute_Commands()
-{
-    ThrowIfFailed(m_CommandList->Close());
-    ID3D12CommandList* cmdLists[] = { m_CommandList };
-    m_CommandQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);
-}
-
 bool CGraphic_Device::Draw_1()
 {
     //// 커맨드 기록을 위한 메모리를 재활용 합니다.
